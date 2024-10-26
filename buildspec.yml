@@ -1,8 +1,16 @@
 version: 0.2
 
 phases:
+  install: 
+    runtime-versions:
+      golang: 1.x
+    commands:
+      - echo "Installing dependencies"
   pre_build:
     commands:
+      - echo "Starting pre-build phase"
+      - go mod init example.com/simpleapp  # Go 모듈 초기화
+      - go mod tidy                        # 필요한 모듈 다운로드 및 정리
       - echo Logging in to Amazon ECR...
       - aws --version
       - ACCOUNT_ID=$(aws sts get-caller-identity | jq ".Account" -r)
@@ -13,6 +21,7 @@ phases:
       - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
   build:
     commands:
+      - go build -o main main.go          # 'main'이라는 이름으로 바이너리 빌드
       - echo Build started on `date`
       - echo Building the Docker image...
       - docker build -t $REPOSITORY_URI:latest .
