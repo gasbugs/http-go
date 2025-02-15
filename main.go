@@ -21,7 +21,7 @@ func Index(wr http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		fmt.Println("requested: /")
 		hostname, _ := os.Hostname()
-		d1 := datas{Data: "Welcome! " + hostname, Version: "v3.0"}
+		d1 := datas{Data: "Welcome! " + hostname, Version: "v3.1"}
 		res, _ := json.Marshal(d1)
 		fmt.Fprintln(wr, string(res))
 		fmt.Println(string(res))
