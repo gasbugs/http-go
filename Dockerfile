@@ -1,11 +1,15 @@
 # syntax=docker/dockerfile:1
 
 # --- 빌더 스테이지: Go 툴체인을 포함한 이미지에서 바이너리를 컴파일합니다.
-FROM golang:1.21 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.21 AS builder
 WORKDIR /go/src/http-go
 # 전체 소스를 복사하여 빌드 컨텍스트를 준비합니다.
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=off go build -o /usr/local/bin/http-go ./main.go
+
+# 앱 버전을 지정받아 Go 빌드 시 주입합니다.
+ARG APP_VERSION=dev
+ARG TARGETARCH
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH:-amd64} GO111MODULE=off go build -ldflags="-X main.version=${APP_VERSION}" -o /usr/local/bin/http-go ./main.go
 
 # --- 런타임 스테이지: 최소한의 Ubuntu 이미지에 바이너리만 포함합니다.
 FROM ubuntu:22.04

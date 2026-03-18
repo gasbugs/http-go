@@ -17,6 +17,9 @@ type responsePayload struct {
 	Version string `json:"version"`
 }
 
+// 빌드 시 주입될 앱 버전
+var version = "dev"
+
 // 루트 경로 핸들러: GET 요청만 허용하고 JSON 환영 메시지를 반환
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
@@ -33,7 +36,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 
 	payload := responsePayload{
 		Data:    "Welcome! " + hostname,
-		Version: "v3.2",
+		Version: version,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
